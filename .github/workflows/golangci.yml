@@ -10,6 +10,8 @@ on:
       - master
       - main
   pull_request:
+  # ワークフローを手動でトリガーする
+  workflow_dispatch:
 permissions:
   contents: read
   # Optional: allow read access to pull request. Use with `only-new-issues` option.

@@ -36,3 +36,18 @@ func (r *Repository) RegisterUser(ctx context.Context, db Execer, u *entity.User
 	u.ID = entity.UserID(id)
 	return nil
 }
+
+// ユーザーを取得する
+// usersテーブルのnameカラムで絞り込む。nameカラムはuniqueである。
+func (r *Repository) GetUser(
+	ctx context.Context, db Queryer, name string,
+) (*entity.User, error) {
+	u := &entity.User{}
+	sql := `SELECT
+			id, name, password, role, created, modified
+			FROM users WHERE name = ?`
+	if err := db.GetContext(ctx, u, sql, name); err != nil {
+		return nil, err
+	}
+	return u, nil
+}

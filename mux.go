@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/validator/v10"
+	"github.com/t-tazy/my_portfolio_api/auth"
 	"github.com/t-tazy/my_portfolio_api/clock"
 	"github.com/t-tazy/my_portfolio_api/config"
 	"github.com/t-tazy/my_portfolio_api/handler"
@@ -30,7 +31,23 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	if err != nil {
 		return nil, cleanup, err
 	}
-	r := store.Repository{Clocker: clock.RealClocker{}}
+	clocker := clock.RealClocker{}
+	r := store.Repository{Clocker: clocker}
+	rcli, err := store.NewKVS(ctx, cfg)
+	if err != nil {
+		return nil, cleanup, err
+	}
+	jwter, err := auth.NewJWTer(rcli, clocker)
+	if err != nil {
+		return nil, cleanup, err
+	}
+
+	l := &handler.Login{
+		Service:   &service.Login{DB: db, Repo: &r, TokenGenerator: jwter},
+		Validator: v,
+	}
+	mux.Post("/login", l.ServeHTTP)
+
 	ae := &handler.AddExercise{
 		Service:   &service.AddExercise{DB: db, Repo: &r},
 		Validator: v,
