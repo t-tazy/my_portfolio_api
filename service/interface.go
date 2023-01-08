@@ -9,7 +9,7 @@ import (
 
 // storeパッケージの直接参照を避ける
 
-//go:generate go run github.com/matryer/moq -out moq_test.go . ExerciseAdder ExerciseLister UserRegister
+//go:generate go run github.com/matryer/moq -out moq_test.go . ExerciseAdder ExerciseLister UserRegister UserGetter TokenGenerator
 type ExerciseAdder interface {
 	AddExercise(ctx context.Context, db store.Execer, e *entity.Exercise) error
 }
@@ -20,4 +20,13 @@ type ExerciseLister interface {
 
 type UserRegister interface {
 	RegisterUser(ctx context.Context, db store.Execer, u *entity.User) error
+}
+
+type UserGetter interface {
+	GetUser(ctx context.Context, db store.Queryer, name string) (*entity.User, error)
+}
+
+// *auth.JWTerの直接参照を避ける
+type TokenGenerator interface {
+	GenerateToken(ctx context.Context, u *entity.User) ([]byte, error)
 }
