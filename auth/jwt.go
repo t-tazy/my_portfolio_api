@@ -103,10 +103,11 @@ func (j *JWTer) GetToken(ctx context.Context, r *http.Request) (jwt.Token, error
 	if err != nil {
 		return nil, err
 	}
+	// 期限切れではないことを確認
 	if err := jwt.Validate(token, jwt.WithClock(j.Clocker)); err != nil {
 		return nil, fmt.Errorf("GetToken: failed to validate token: %w", err)
 	}
-	// 期限切れではないことを確認
+	// Redisから削除されていないか確認
 	if _, err := j.Store.Load(ctx, token.JwtID()); err != nil {
 		return nil, fmt.Errorf("GetToken: %q expired: %w", token.JwtID(), err)
 	}
