@@ -10,6 +10,7 @@ import (
 	"github.com/t-tazy/my_portfolio_api/clock"
 	"github.com/t-tazy/my_portfolio_api/entity"
 	"github.com/t-tazy/my_portfolio_api/testutil"
+	"github.com/t-tazy/my_portfolio_api/testutil/fixture"
 )
 
 // 実際のRDBMSを使ってテストする
@@ -23,10 +24,10 @@ func TestRepository_ListExercises(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	wants := prepareExercises(ctx, t, tx)
+	wantUserID, wants := prepareExercises(ctx, t, tx)
 
 	sut := &Repository{}
-	gots, err := sut.ListExercises(ctx, tx)
+	gots, err := sut.ListExercises(ctx, tx, wantUserID)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -35,10 +36,33 @@ func TestRepository_ListExercises(t *testing.T) {
 	}
 }
 
-// exercisesテーブルの状態を整えるヘルパー
-func prepareExercises(ctx context.Context, t *testing.T, con Execer) entity.Exercises {
+// ダミーユーザーを作成し、保存するテストヘルパー
+func prepareUser(ctx context.Context, t *testing.T, db Execer) entity.UserID {
 	t.Helper()
 
+	u := fixture.User(nil) // ダミーユーザー作成
+	result, err := db.ExecContext(ctx,
+		`INSERT INTO users (name, password, role, created, modified)
+		VALUES (?, ?, ?, ?, ?);`,
+		u.Name, u.Password, u.Role, u.Created, u.Modified,
+	)
+	if err != nil {
+		t.Fatalf("insert user: %v", err)
+	}
+	id, err := result.LastInsertId()
+	if err != nil {
+		t.Fatalf("got user_id: %v", err)
+	}
+	return entity.UserID(id)
+}
+
+// exercisesテーブルの状態を整えるヘルパー
+// exercisesテーブルにダミーデータを保存し、期待値を返す
+func prepareExercises(ctx context.Context, t *testing.T, con Execer) (entity.UserID, entity.Exercises) {
+	t.Helper()
+
+	userID := prepareUser(ctx, t, con)
+	otherUserID := prepareUser(ctx, t, con)
 	// 一度データをきれいにする
 	if _, err := con.ExecContext(ctx, "DELETE FROM exercises;"); err != nil {
 		t.Logf("failed to initialize exercises: %v", err)
@@ -47,33 +71,40 @@ func prepareExercises(ctx context.Context, t *testing.T, con Execer) entity.Exer
 	c := clock.FixedClocker{}
 	wants := entity.Exercises{
 		{
+			UserID:      userID,
 			Title:       "exercise 1",
 			Description: "want exercise 1",
 			Created:     c.Now(),
 			Modified:    c.Now(),
 		},
 		{
+			UserID:      userID,
 			Title:       "exercise 2",
 			Description: "want exercise 2",
 			Created:     c.Now(),
 			Modified:    c.Now(),
 		},
+	}
+	exercises := entity.Exercises{
+		wants[0],
 		{
-			Title:       "exercise 3",
-			Description: "want exercise 3",
+			UserID:      otherUserID,
+			Title:       "not want exercise",
+			Description: "",
 			Created:     c.Now(),
 			Modified:    c.Now(),
 		},
+		wants[1],
 	}
 	result, err := con.ExecContext(ctx,
-		`INSERT INTO exercises (title, description, created, modified)
+		`INSERT INTO exercises (user_id, title, description, created, modified)
 		VALUES
-			(?, ?, ?, ?),
-			(?, ?, ?, ?),
-			(?, ?, ?, ?);`,
-		wants[0].Title, wants[0].Description, wants[0].Created, wants[0].Modified,
-		wants[1].Title, wants[1].Description, wants[1].Created, wants[1].Modified,
-		wants[2].Title, wants[2].Description, wants[2].Created, wants[2].Modified,
+			(?, ?, ?, ?, ?),
+			(?, ?, ?, ?, ?),
+			(?, ?, ?, ?, ?);`,
+		exercises[0].UserID, exercises[0].Title, exercises[0].Description, exercises[0].Created, exercises[0].Modified,
+		exercises[1].UserID, exercises[1].Title, exercises[1].Description, exercises[1].Created, exercises[1].Modified,
+		exercises[2].UserID, exercises[2].Title, exercises[2].Description, exercises[2].Created, exercises[2].Modified,
 	)
 	if err != nil {
 		t.Fatal(err)
@@ -84,10 +115,10 @@ func prepareExercises(ctx context.Context, t *testing.T, con Execer) entity.Exer
 	if err != nil {
 		t.Fatal(err)
 	}
-	wants[0].ID = entity.ExerciseID(id)
-	wants[1].ID = entity.ExerciseID(id + 1)
-	wants[2].ID = entity.ExerciseID(id + 2)
-	return wants
+	exercises[0].ID = entity.ExerciseID(id)
+	exercises[1].ID = entity.ExerciseID(id + 1)
+	exercises[2].ID = entity.ExerciseID(id + 2)
+	return userID, wants
 }
 
 // mockを使ってテストする
@@ -98,6 +129,7 @@ func TestRepository_AddExercise(t *testing.T) {
 	c := clock.FixedClocker{}
 	var wantID int64 = 20
 	okExercise := &entity.Exercise{
+		UserID:      30,
 		Title:       "ok Exericse",
 		Description: "test exercise",
 		Created:     c.Now(),
@@ -113,8 +145,8 @@ func TestRepository_AddExercise(t *testing.T) {
 	// mock化
 	mock.ExpectExec(
 		// エスケープが必要
-		`INSERT INTO exercises \(title, description, created, modified\) VALUES \(\?, \?, \?, \?\)`,
-	).WithArgs(okExercise.Title, okExercise.Description, okExercise.Created, okExercise.Modified).
+		`INSERT INTO exercises \(user_id, title, description, created, modified\) VALUES \(\?, \?, \?, \?, \?\)`,
+	).WithArgs(okExercise.UserID, okExercise.Title, okExercise.Description, okExercise.Created, okExercise.Modified).
 		WillReturnResult(sqlmock.NewResult(wantID, 1))
 
 	xdb := sqlx.NewDb(db, "mysql")
