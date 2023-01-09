@@ -98,7 +98,7 @@ var _ ExerciseLister = &ExerciseListerMock{}
 //
 //		// make and configure a mocked ExerciseLister
 //		mockedExerciseLister := &ExerciseListerMock{
-//			ListExercisesFunc: func(ctx context.Context, db store.Queryer) (entity.Exercises, error) {
+//			ListExercisesFunc: func(ctx context.Context, db store.Queryer, id entity.UserID) (entity.Exercises, error) {
 //				panic("mock out the ListExercises method")
 //			},
 //		}
@@ -109,7 +109,7 @@ var _ ExerciseLister = &ExerciseListerMock{}
 //	}
 type ExerciseListerMock struct {
 	// ListExercisesFunc mocks the ListExercises method.
-	ListExercisesFunc func(ctx context.Context, db store.Queryer) (entity.Exercises, error)
+	ListExercisesFunc func(ctx context.Context, db store.Queryer, id entity.UserID) (entity.Exercises, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -119,27 +119,31 @@ type ExerciseListerMock struct {
 			Ctx context.Context
 			// Db is the db argument value.
 			Db store.Queryer
+			// ID is the id argument value.
+			ID entity.UserID
 		}
 	}
 	lockListExercises sync.RWMutex
 }
 
 // ListExercises calls ListExercisesFunc.
-func (mock *ExerciseListerMock) ListExercises(ctx context.Context, db store.Queryer) (entity.Exercises, error) {
+func (mock *ExerciseListerMock) ListExercises(ctx context.Context, db store.Queryer, id entity.UserID) (entity.Exercises, error) {
 	if mock.ListExercisesFunc == nil {
 		panic("ExerciseListerMock.ListExercisesFunc: method is nil but ExerciseLister.ListExercises was just called")
 	}
 	callInfo := struct {
 		Ctx context.Context
 		Db  store.Queryer
+		ID  entity.UserID
 	}{
 		Ctx: ctx,
 		Db:  db,
+		ID:  id,
 	}
 	mock.lockListExercises.Lock()
 	mock.calls.ListExercises = append(mock.calls.ListExercises, callInfo)
 	mock.lockListExercises.Unlock()
-	return mock.ListExercisesFunc(ctx, db)
+	return mock.ListExercisesFunc(ctx, db, id)
 }
 
 // ListExercisesCalls gets all the calls that were made to ListExercises.
@@ -149,10 +153,12 @@ func (mock *ExerciseListerMock) ListExercises(ctx context.Context, db store.Quer
 func (mock *ExerciseListerMock) ListExercisesCalls() []struct {
 	Ctx context.Context
 	Db  store.Queryer
+	ID  entity.UserID
 } {
 	var calls []struct {
 		Ctx context.Context
 		Db  store.Queryer
+		ID  entity.UserID
 	}
 	mock.lockListExercises.RLock()
 	calls = mock.calls.ListExercises
