@@ -15,7 +15,7 @@ type ExerciseAdder interface {
 }
 
 type ExerciseLister interface {
-	ListExercises(ctx context.Context, db store.Queryer) (entity.Exercises, error)
+	ListExercises(ctx context.Context, db store.Queryer, id entity.UserID) (entity.Exercises, error)
 }
 
 type UserRegister interface {

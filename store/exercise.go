@@ -6,15 +6,16 @@ import (
 	"github.com/t-tazy/my_portfolio_api/entity"
 )
 
-// 全てのエクササイズを取得する
+// 引数で受け取ったユーザーIDのエクササイズを取得する
 func (r *Repository) ListExercises(
-	ctx context.Context, db Queryer,
+	ctx context.Context, db Queryer, id entity.UserID,
 ) (entity.Exercises, error) {
 	exercises := entity.Exercises{}
 	sql := `SELECT
-			id, title, description, created, modified
-			FROM exercises;`
-	if err := db.SelectContext(ctx, &exercises, sql); err != nil {
+			id, user_id, title, description, created, modified
+			FROM exercises
+			WHERE user_id = ?;`
+	if err := db.SelectContext(ctx, &exercises, sql, id); err != nil {
 		return nil, err
 	}
 	return exercises, nil
@@ -29,10 +30,10 @@ func (r *Repository) AddExercise(
 	e.Created = r.Clocker.Now()
 	e.Modified = r.Clocker.Now()
 	sql := `INSERT INTO exercises
-			(title, description, created, modified)
-			VALUES (?, ?, ?, ?)`
+			(user_id, title, description, created, modified)
+			VALUES (?, ?, ?, ?, ?)`
 	result, err := db.ExecContext(
-		ctx, sql, e.Title, e.Description, e.Created, e.Modified,
+		ctx, sql, e.UserID, e.Title, e.Description, e.Created, e.Modified,
 	)
 	if err != nil {
 		return err
