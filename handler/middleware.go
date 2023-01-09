@@ -7,6 +7,7 @@ import (
 )
 
 // リクエストスコープな値（ユーザーID、ロール）をcontextへ埋め込む
+// アクセストークンがない場合はリクエストの処理が終了させる
 func AuthMiddleware(j *auth.JWTer) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

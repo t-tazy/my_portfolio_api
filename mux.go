@@ -52,12 +52,23 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 		Service:   &service.AddExercise{DB: db, Repo: &r},
 		Validator: v,
 	}
-	mux.Post("/exercises", ae.ServeHTTP)
-
 	le := &handler.ListExercise{
 		Service: &service.ListExercise{DB: db, Repo: &r},
 	}
-	mux.Get("/exercises", le.ServeHTTP)
+	mux.Route("/exercises", func(r chi.Router) {
+		r.Use(handler.AuthMiddleware(jwter))
+		r.Post("/", ae.ServeHTTP)
+		r.Get("/", le.ServeHTTP)
+	})
+
+	// adminロールのユーザーのみがアクセス可能なエンドポイント
+	mux.Route("/admin", func(r chi.Router) {
+		r.Use(handler.AuthMiddleware(jwter), handler.AdminMiddleware)
+		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json; charset=utf-8")
+			_, _ = w.Write([]byte(`{"message": "admin only"}`))
+		})
+	})
 
 	ru := &handler.RegisterUser{
 		Service:   &service.RegisterUser{DB: db, Repo: &r},
