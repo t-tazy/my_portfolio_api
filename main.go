@@ -18,7 +18,7 @@ func main() {
 	}
 }
 
-// 環境変数から読み込んだポート番号でリッスンし、リクエストパスをレスポンスとして返すHTTPサーバーを起動
+// 環境変数から読み込んだポート番号でリッスンするHTTPサーバーを起動
 func run(ctx context.Context) error {
 	cfg, err := config.New()
 	if err != nil {
@@ -31,7 +31,13 @@ func run(ctx context.Context) error {
 	url := fmt.Sprintf("http://%s", l.Addr().String())
 	log.Printf("start with: %v", url)
 
-	mux := NewMux()
+	mux, cleanup, err := NewMux(ctx, cfg)
+	if err != nil {
+		return err
+	}
+	// メインプロセスであるrun関数の終了に合わせて
+	// DBのコネクションを終了させる
+	defer cleanup()
 	s := NewServer(l, mux)
 	return s.Run(ctx)
 }

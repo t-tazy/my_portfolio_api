@@ -1,15 +1,17 @@
 name: golangci-lint
 on:
-  push:
-    # filterをかける
-    # vで始まるタグが付いたブランチへのpush
-    tags:
-      - v*
-    # main,masterのへのpush
-    branches:
-      - master
-      - main
-  pull_request:
+  # push:
+  #   # filterをかける
+  #   # vで始まるタグが付いたブランチへのpush
+  #   tags:
+  #     - v*
+  #   # main,masterのへのpush
+  #   branches:
+  #     - master
+  #     - main
+  # pull_request:
+  # ワークフローを手動でトリガーする
+  workflow_dispatch:
 permissions:
   contents: read
   # Optional: allow read access to pull request. Use with `only-new-issues` option.

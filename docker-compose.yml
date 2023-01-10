@@ -7,7 +7,38 @@ services:
     environment:
       PORTFOLIO_ENV: dev
       PORT: 8080
+      PORTFOLIO_DB_HOST: portfolio-db
+      PORTFOLIO_DB_PORT: 3306
+      PORTFOLIO_DB_USER: portfolio
+      PORTFOLIO_DB_PASSWORD: portfolio
+      PORTFORIO_DB_NAME: portfolio
+      PORTFOLIO_REDIS_HOST: portfolio-redis
+      PORTFOLIO_REDIS_PORT: 6379
     volumes:
       - .:/app
     ports:
       - "18000:8080"
+  portfolio-db:
+    image: mysql:8.0.31
+    platform: linux/amd64
+    container_name: portfolio-db
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_USER: portfolio
+      MYSQL_PASSWORD: portfolio
+      MYSQL_DATABASE: portfolio
+    volumes:
+      - portfolio-db-data:/var/lib/mysql
+      - $PWD/_tools/mysql/conf.d:/etc/mysql/conf.d:cached
+    ports:
+      - "33306:3306"
+  portfolio-redis:
+    image: redis:7.0.7
+    container_name: portfolio-redis
+    ports:
+      - "36379:6379"
+    volumes:
+      - portfolio-redis-data:/data
+volumes:
+  portfolio-db-data:
+  portfolio-redis-data:

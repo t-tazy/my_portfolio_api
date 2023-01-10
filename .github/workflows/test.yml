@@ -7,11 +7,39 @@ name: test
 jobs:
   test:
     runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0.31
+        options: >-
+          --health-cmd "mysqladmin ping -h localhost"
+          --health-interval 20s
+          --health-timeout 10s
+          --health-retries 10
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+          MYSQL_USER: portfolio
+          MYSQL_PASSWORD: portfolio
+          MYSQL_DATABASE: portfolio
+      redis:
+        image: redis:7.0.7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
     steps:
     - uses: actions/setup-go@v3
       with:
         go-version: '>=1.19'
     - uses: actions/checkout@v3
+    - run: |
+        mkdir auth/cert && openssl genrsa 4096 > auth/cert/secret.pem && openssl rsa -pubout < auth/cert/secret.pem > auth/cert/public.pem
+        go install github.com/k0kubun/sqldef/cmd/mysqldef@latest
+        mysqldef -u portfolio -p portfolio -h 127.0.0.1 -P 3306 portfolio < ./_tools/mysql/schema.sql
     - run: go test ./... -coverprofile=coverage.out
     - name: report coverage
       uses: k1LoW/octocov-action@v0

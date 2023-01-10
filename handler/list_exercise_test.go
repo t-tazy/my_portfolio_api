@@ -1,12 +1,13 @@
 package handler
 
 import (
+	"context"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/t-tazy/my_portfolio_api/entity"
-	"github.com/t-tazy/my_portfolio_api/store"
 	"github.com/t-tazy/my_portfolio_api/testutil"
 )
 
@@ -18,17 +19,17 @@ func TestListExercise(t *testing.T) {
 		rspFile string
 	}
 	tests := map[string]struct {
-		exercises map[entity.ExerciseID]*entity.Exercise
+		exercises []*entity.Exercise
 		want      want
 	}{
 		"ok": {
-			exercises: map[entity.ExerciseID]*entity.Exercise{
-				1: {
+			exercises: []*entity.Exercise{
+				{
 					ID:          1,
 					Title:       "test1",
 					Description: "",
 				},
-				2: {
+				{
 					ID:          2,
 					Title:       "test2",
 					Description: "テスト用",
@@ -40,7 +41,7 @@ func TestListExercise(t *testing.T) {
 			},
 		},
 		"empty": {
-			exercises: map[entity.ExerciseID]*entity.Exercise{},
+			exercises: []*entity.Exercise{},
 			want: want{
 				status:  http.StatusOK,
 				rspFile: "testdata/list_exercise/empty_rsp.json.golden",
@@ -55,9 +56,16 @@ func TestListExercise(t *testing.T) {
 			w := httptest.NewRecorder()
 			r := httptest.NewRequest(http.MethodGet, "/exercises", nil)
 
-			sut := ListExercise{
-				Store: &store.ExerciseStore{Exercises: test.exercises},
+			moq := &ListExercisesServiceMock{}
+			moq.ListExercisesFunc = func(
+				ctx context.Context,
+			) (entity.Exercises, error) {
+				if test.exercises != nil {
+					return test.exercises, nil
+				}
+				return nil, errors.New("error from mock")
 			}
+			sut := ListExercise{Service: moq}
 			sut.ServeHTTP(w, r)
 			rsp := w.Result()
 			testutil.AssertResponse(
