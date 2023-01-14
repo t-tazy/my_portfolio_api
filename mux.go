@@ -55,10 +55,16 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	le := &handler.ListExercise{
 		Service: &service.ListExercise{DB: db, Repo: &r},
 	}
+	ge := &handler.GetExercise{
+		Service: &service.GetExercise{DB: db, Repo: &r},
+	}
 	mux.Route("/exercises", func(r chi.Router) {
 		r.Use(handler.AuthMiddleware(jwter))
 		r.Post("/", ae.ServeHTTP)
 		r.Get("/", le.ServeHTTP)
+		r.Route("/{exerciseID}", func(r chi.Router) {
+			r.Get("/", ge.ServeHTTP)
+		})
 	})
 
 	// adminロールのユーザーのみがアクセス可能なエンドポイント

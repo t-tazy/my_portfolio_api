@@ -18,6 +18,10 @@ type ExerciseLister interface {
 	ListExercises(ctx context.Context, db store.Queryer, id entity.UserID) (entity.Exercises, error)
 }
 
+type ExerciseGetter interface {
+	GetExercise(ctx context.Context, db store.Queryer, id entity.ExerciseID) (*entity.Exercise, error)
+}
+
 type UserRegister interface {
 	RegisterUser(ctx context.Context, db store.Execer, u *entity.User) error
 }

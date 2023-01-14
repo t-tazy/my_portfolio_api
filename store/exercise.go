@@ -45,3 +45,15 @@ func (r *Repository) AddExercise(
 	e.ID = entity.ExerciseID(id)
 	return nil
 }
+
+// エクササイズを取得する
+func (r *Repository) GetExercise(
+	ctx context.Context, db Queryer, id entity.ExerciseID,
+) (*entity.Exercise, error) {
+	exercise := &entity.Exercise{}
+	sql := `SELECT * FROM exercises WHERE id = ?;`
+	if err := db.GetContext(ctx, exercise, sql, id); err != nil {
+		return nil, err
+	}
+	return exercise, nil
+}

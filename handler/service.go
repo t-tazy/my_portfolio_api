@@ -17,6 +17,10 @@ type AddExerciseService interface {
 	AddExercise(ctx context.Context, title, description string) (*entity.Exercise, error)
 }
 
+type GetExerciseService interface {
+	GetExercise(ctx context.Context, id entity.ExerciseID) (*entity.Exercise, error)
+}
+
 type RegisterUserService interface {
 	RegisterUser(ctx context.Context, name, password, role string) (*entity.User, error)
 }
