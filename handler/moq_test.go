@@ -153,6 +153,234 @@ func (mock *AddExerciseServiceMock) AddExerciseCalls() []struct {
 	return calls
 }
 
+// Ensure, that GetExerciseServiceMock does implement GetExerciseService.
+// If this is not the case, regenerate this file with moq.
+var _ GetExerciseService = &GetExerciseServiceMock{}
+
+// GetExerciseServiceMock is a mock implementation of GetExerciseService.
+//
+//	func TestSomethingThatUsesGetExerciseService(t *testing.T) {
+//
+//		// make and configure a mocked GetExerciseService
+//		mockedGetExerciseService := &GetExerciseServiceMock{
+//			GetExerciseFunc: func(ctx context.Context, id entity.ExerciseID) (*entity.Exercise, error) {
+//				panic("mock out the GetExercise method")
+//			},
+//		}
+//
+//		// use mockedGetExerciseService in code that requires GetExerciseService
+//		// and then make assertions.
+//
+//	}
+type GetExerciseServiceMock struct {
+	// GetExerciseFunc mocks the GetExercise method.
+	GetExerciseFunc func(ctx context.Context, id entity.ExerciseID) (*entity.Exercise, error)
+
+	// calls tracks calls to the methods.
+	calls struct {
+		// GetExercise holds details about calls to the GetExercise method.
+		GetExercise []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID entity.ExerciseID
+		}
+	}
+	lockGetExercise sync.RWMutex
+}
+
+// GetExercise calls GetExerciseFunc.
+func (mock *GetExerciseServiceMock) GetExercise(ctx context.Context, id entity.ExerciseID) (*entity.Exercise, error) {
+	if mock.GetExerciseFunc == nil {
+		panic("GetExerciseServiceMock.GetExerciseFunc: method is nil but GetExerciseService.GetExercise was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		ID  entity.ExerciseID
+	}{
+		Ctx: ctx,
+		ID:  id,
+	}
+	mock.lockGetExercise.Lock()
+	mock.calls.GetExercise = append(mock.calls.GetExercise, callInfo)
+	mock.lockGetExercise.Unlock()
+	return mock.GetExerciseFunc(ctx, id)
+}
+
+// GetExerciseCalls gets all the calls that were made to GetExercise.
+// Check the length with:
+//
+//	len(mockedGetExerciseService.GetExerciseCalls())
+func (mock *GetExerciseServiceMock) GetExerciseCalls() []struct {
+	Ctx context.Context
+	ID  entity.ExerciseID
+} {
+	var calls []struct {
+		Ctx context.Context
+		ID  entity.ExerciseID
+	}
+	mock.lockGetExercise.RLock()
+	calls = mock.calls.GetExercise
+	mock.lockGetExercise.RUnlock()
+	return calls
+}
+
+// Ensure, that DeleteExerciseServiceMock does implement DeleteExerciseService.
+// If this is not the case, regenerate this file with moq.
+var _ DeleteExerciseService = &DeleteExerciseServiceMock{}
+
+// DeleteExerciseServiceMock is a mock implementation of DeleteExerciseService.
+//
+//	func TestSomethingThatUsesDeleteExerciseService(t *testing.T) {
+//
+//		// make and configure a mocked DeleteExerciseService
+//		mockedDeleteExerciseService := &DeleteExerciseServiceMock{
+//			DeleteExerciseFunc: func(ctx context.Context, id entity.ExerciseID) error {
+//				panic("mock out the DeleteExercise method")
+//			},
+//		}
+//
+//		// use mockedDeleteExerciseService in code that requires DeleteExerciseService
+//		// and then make assertions.
+//
+//	}
+type DeleteExerciseServiceMock struct {
+	// DeleteExerciseFunc mocks the DeleteExercise method.
+	DeleteExerciseFunc func(ctx context.Context, id entity.ExerciseID) error
+
+	// calls tracks calls to the methods.
+	calls struct {
+		// DeleteExercise holds details about calls to the DeleteExercise method.
+		DeleteExercise []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID entity.ExerciseID
+		}
+	}
+	lockDeleteExercise sync.RWMutex
+}
+
+// DeleteExercise calls DeleteExerciseFunc.
+func (mock *DeleteExerciseServiceMock) DeleteExercise(ctx context.Context, id entity.ExerciseID) error {
+	if mock.DeleteExerciseFunc == nil {
+		panic("DeleteExerciseServiceMock.DeleteExerciseFunc: method is nil but DeleteExerciseService.DeleteExercise was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		ID  entity.ExerciseID
+	}{
+		Ctx: ctx,
+		ID:  id,
+	}
+	mock.lockDeleteExercise.Lock()
+	mock.calls.DeleteExercise = append(mock.calls.DeleteExercise, callInfo)
+	mock.lockDeleteExercise.Unlock()
+	return mock.DeleteExerciseFunc(ctx, id)
+}
+
+// DeleteExerciseCalls gets all the calls that were made to DeleteExercise.
+// Check the length with:
+//
+//	len(mockedDeleteExerciseService.DeleteExerciseCalls())
+func (mock *DeleteExerciseServiceMock) DeleteExerciseCalls() []struct {
+	Ctx context.Context
+	ID  entity.ExerciseID
+} {
+	var calls []struct {
+		Ctx context.Context
+		ID  entity.ExerciseID
+	}
+	mock.lockDeleteExercise.RLock()
+	calls = mock.calls.DeleteExercise
+	mock.lockDeleteExercise.RUnlock()
+	return calls
+}
+
+// Ensure, that UpdateExerciseServiceMock does implement UpdateExerciseService.
+// If this is not the case, regenerate this file with moq.
+var _ UpdateExerciseService = &UpdateExerciseServiceMock{}
+
+// UpdateExerciseServiceMock is a mock implementation of UpdateExerciseService.
+//
+//	func TestSomethingThatUsesUpdateExerciseService(t *testing.T) {
+//
+//		// make and configure a mocked UpdateExerciseService
+//		mockedUpdateExerciseService := &UpdateExerciseServiceMock{
+//			UpdateExerciseFunc: func(ctx context.Context, id entity.ExerciseID, title string, description string) error {
+//				panic("mock out the UpdateExercise method")
+//			},
+//		}
+//
+//		// use mockedUpdateExerciseService in code that requires UpdateExerciseService
+//		// and then make assertions.
+//
+//	}
+type UpdateExerciseServiceMock struct {
+	// UpdateExerciseFunc mocks the UpdateExercise method.
+	UpdateExerciseFunc func(ctx context.Context, id entity.ExerciseID, title string, description string) error
+
+	// calls tracks calls to the methods.
+	calls struct {
+		// UpdateExercise holds details about calls to the UpdateExercise method.
+		UpdateExercise []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID entity.ExerciseID
+			// Title is the title argument value.
+			Title string
+			// Description is the description argument value.
+			Description string
+		}
+	}
+	lockUpdateExercise sync.RWMutex
+}
+
+// UpdateExercise calls UpdateExerciseFunc.
+func (mock *UpdateExerciseServiceMock) UpdateExercise(ctx context.Context, id entity.ExerciseID, title string, description string) error {
+	if mock.UpdateExerciseFunc == nil {
+		panic("UpdateExerciseServiceMock.UpdateExerciseFunc: method is nil but UpdateExerciseService.UpdateExercise was just called")
+	}
+	callInfo := struct {
+		Ctx         context.Context
+		ID          entity.ExerciseID
+		Title       string
+		Description string
+	}{
+		Ctx:         ctx,
+		ID:          id,
+		Title:       title,
+		Description: description,
+	}
+	mock.lockUpdateExercise.Lock()
+	mock.calls.UpdateExercise = append(mock.calls.UpdateExercise, callInfo)
+	mock.lockUpdateExercise.Unlock()
+	return mock.UpdateExerciseFunc(ctx, id, title, description)
+}
+
+// UpdateExerciseCalls gets all the calls that were made to UpdateExercise.
+// Check the length with:
+//
+//	len(mockedUpdateExerciseService.UpdateExerciseCalls())
+func (mock *UpdateExerciseServiceMock) UpdateExerciseCalls() []struct {
+	Ctx         context.Context
+	ID          entity.ExerciseID
+	Title       string
+	Description string
+} {
+	var calls []struct {
+		Ctx         context.Context
+		ID          entity.ExerciseID
+		Title       string
+		Description string
+	}
+	mock.lockUpdateExercise.RLock()
+	calls = mock.calls.UpdateExercise
+	mock.lockUpdateExercise.RUnlock()
+	return calls
+}
+
 // Ensure, that RegisterUserServiceMock does implement RegisterUserService.
 // If this is not the case, regenerate this file with moq.
 var _ RegisterUserService = &RegisterUserServiceMock{}

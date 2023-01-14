@@ -166,6 +166,240 @@ func (mock *ExerciseListerMock) ListExercisesCalls() []struct {
 	return calls
 }
 
+// Ensure, that ExerciseGetterMock does implement ExerciseGetter.
+// If this is not the case, regenerate this file with moq.
+var _ ExerciseGetter = &ExerciseGetterMock{}
+
+// ExerciseGetterMock is a mock implementation of ExerciseGetter.
+//
+//	func TestSomethingThatUsesExerciseGetter(t *testing.T) {
+//
+//		// make and configure a mocked ExerciseGetter
+//		mockedExerciseGetter := &ExerciseGetterMock{
+//			GetExerciseFunc: func(ctx context.Context, db store.Queryer, id entity.ExerciseID) (*entity.Exercise, error) {
+//				panic("mock out the GetExercise method")
+//			},
+//		}
+//
+//		// use mockedExerciseGetter in code that requires ExerciseGetter
+//		// and then make assertions.
+//
+//	}
+type ExerciseGetterMock struct {
+	// GetExerciseFunc mocks the GetExercise method.
+	GetExerciseFunc func(ctx context.Context, db store.Queryer, id entity.ExerciseID) (*entity.Exercise, error)
+
+	// calls tracks calls to the methods.
+	calls struct {
+		// GetExercise holds details about calls to the GetExercise method.
+		GetExercise []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Db is the db argument value.
+			Db store.Queryer
+			// ID is the id argument value.
+			ID entity.ExerciseID
+		}
+	}
+	lockGetExercise sync.RWMutex
+}
+
+// GetExercise calls GetExerciseFunc.
+func (mock *ExerciseGetterMock) GetExercise(ctx context.Context, db store.Queryer, id entity.ExerciseID) (*entity.Exercise, error) {
+	if mock.GetExerciseFunc == nil {
+		panic("ExerciseGetterMock.GetExerciseFunc: method is nil but ExerciseGetter.GetExercise was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Db  store.Queryer
+		ID  entity.ExerciseID
+	}{
+		Ctx: ctx,
+		Db:  db,
+		ID:  id,
+	}
+	mock.lockGetExercise.Lock()
+	mock.calls.GetExercise = append(mock.calls.GetExercise, callInfo)
+	mock.lockGetExercise.Unlock()
+	return mock.GetExerciseFunc(ctx, db, id)
+}
+
+// GetExerciseCalls gets all the calls that were made to GetExercise.
+// Check the length with:
+//
+//	len(mockedExerciseGetter.GetExerciseCalls())
+func (mock *ExerciseGetterMock) GetExerciseCalls() []struct {
+	Ctx context.Context
+	Db  store.Queryer
+	ID  entity.ExerciseID
+} {
+	var calls []struct {
+		Ctx context.Context
+		Db  store.Queryer
+		ID  entity.ExerciseID
+	}
+	mock.lockGetExercise.RLock()
+	calls = mock.calls.GetExercise
+	mock.lockGetExercise.RUnlock()
+	return calls
+}
+
+// Ensure, that ExerciseDeleterMock does implement ExerciseDeleter.
+// If this is not the case, regenerate this file with moq.
+var _ ExerciseDeleter = &ExerciseDeleterMock{}
+
+// ExerciseDeleterMock is a mock implementation of ExerciseDeleter.
+//
+//	func TestSomethingThatUsesExerciseDeleter(t *testing.T) {
+//
+//		// make and configure a mocked ExerciseDeleter
+//		mockedExerciseDeleter := &ExerciseDeleterMock{
+//			DeleteExerciseFunc: func(ctx context.Context, db store.Execer, id entity.ExerciseID) (*int64, error) {
+//				panic("mock out the DeleteExercise method")
+//			},
+//		}
+//
+//		// use mockedExerciseDeleter in code that requires ExerciseDeleter
+//		// and then make assertions.
+//
+//	}
+type ExerciseDeleterMock struct {
+	// DeleteExerciseFunc mocks the DeleteExercise method.
+	DeleteExerciseFunc func(ctx context.Context, db store.Execer, id entity.ExerciseID) (*int64, error)
+
+	// calls tracks calls to the methods.
+	calls struct {
+		// DeleteExercise holds details about calls to the DeleteExercise method.
+		DeleteExercise []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Db is the db argument value.
+			Db store.Execer
+			// ID is the id argument value.
+			ID entity.ExerciseID
+		}
+	}
+	lockDeleteExercise sync.RWMutex
+}
+
+// DeleteExercise calls DeleteExerciseFunc.
+func (mock *ExerciseDeleterMock) DeleteExercise(ctx context.Context, db store.Execer, id entity.ExerciseID) (*int64, error) {
+	if mock.DeleteExerciseFunc == nil {
+		panic("ExerciseDeleterMock.DeleteExerciseFunc: method is nil but ExerciseDeleter.DeleteExercise was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Db  store.Execer
+		ID  entity.ExerciseID
+	}{
+		Ctx: ctx,
+		Db:  db,
+		ID:  id,
+	}
+	mock.lockDeleteExercise.Lock()
+	mock.calls.DeleteExercise = append(mock.calls.DeleteExercise, callInfo)
+	mock.lockDeleteExercise.Unlock()
+	return mock.DeleteExerciseFunc(ctx, db, id)
+}
+
+// DeleteExerciseCalls gets all the calls that were made to DeleteExercise.
+// Check the length with:
+//
+//	len(mockedExerciseDeleter.DeleteExerciseCalls())
+func (mock *ExerciseDeleterMock) DeleteExerciseCalls() []struct {
+	Ctx context.Context
+	Db  store.Execer
+	ID  entity.ExerciseID
+} {
+	var calls []struct {
+		Ctx context.Context
+		Db  store.Execer
+		ID  entity.ExerciseID
+	}
+	mock.lockDeleteExercise.RLock()
+	calls = mock.calls.DeleteExercise
+	mock.lockDeleteExercise.RUnlock()
+	return calls
+}
+
+// Ensure, that ExerciseUpdaterMock does implement ExerciseUpdater.
+// If this is not the case, regenerate this file with moq.
+var _ ExerciseUpdater = &ExerciseUpdaterMock{}
+
+// ExerciseUpdaterMock is a mock implementation of ExerciseUpdater.
+//
+//	func TestSomethingThatUsesExerciseUpdater(t *testing.T) {
+//
+//		// make and configure a mocked ExerciseUpdater
+//		mockedExerciseUpdater := &ExerciseUpdaterMock{
+//			UpdateExerciseFunc: func(ctx context.Context, db store.Execer, e *entity.Exercise) (*int64, error) {
+//				panic("mock out the UpdateExercise method")
+//			},
+//		}
+//
+//		// use mockedExerciseUpdater in code that requires ExerciseUpdater
+//		// and then make assertions.
+//
+//	}
+type ExerciseUpdaterMock struct {
+	// UpdateExerciseFunc mocks the UpdateExercise method.
+	UpdateExerciseFunc func(ctx context.Context, db store.Execer, e *entity.Exercise) (*int64, error)
+
+	// calls tracks calls to the methods.
+	calls struct {
+		// UpdateExercise holds details about calls to the UpdateExercise method.
+		UpdateExercise []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Db is the db argument value.
+			Db store.Execer
+			// E is the e argument value.
+			E *entity.Exercise
+		}
+	}
+	lockUpdateExercise sync.RWMutex
+}
+
+// UpdateExercise calls UpdateExerciseFunc.
+func (mock *ExerciseUpdaterMock) UpdateExercise(ctx context.Context, db store.Execer, e *entity.Exercise) (*int64, error) {
+	if mock.UpdateExerciseFunc == nil {
+		panic("ExerciseUpdaterMock.UpdateExerciseFunc: method is nil but ExerciseUpdater.UpdateExercise was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Db  store.Execer
+		E   *entity.Exercise
+	}{
+		Ctx: ctx,
+		Db:  db,
+		E:   e,
+	}
+	mock.lockUpdateExercise.Lock()
+	mock.calls.UpdateExercise = append(mock.calls.UpdateExercise, callInfo)
+	mock.lockUpdateExercise.Unlock()
+	return mock.UpdateExerciseFunc(ctx, db, e)
+}
+
+// UpdateExerciseCalls gets all the calls that were made to UpdateExercise.
+// Check the length with:
+//
+//	len(mockedExerciseUpdater.UpdateExerciseCalls())
+func (mock *ExerciseUpdaterMock) UpdateExerciseCalls() []struct {
+	Ctx context.Context
+	Db  store.Execer
+	E   *entity.Exercise
+} {
+	var calls []struct {
+		Ctx context.Context
+		Db  store.Execer
+		E   *entity.Exercise
+	}
+	mock.lockUpdateExercise.RLock()
+	calls = mock.calls.UpdateExercise
+	mock.lockUpdateExercise.RUnlock()
+	return calls
+}
+
 // Ensure, that UserRegisterMock does implement UserRegister.
 // If this is not the case, regenerate this file with moq.
 var _ UserRegister = &UserRegisterMock{}
