@@ -58,12 +58,24 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	ge := &handler.GetExercise{
 		Service: &service.GetExercise{DB: db, Repo: &r},
 	}
+	de := &handler.DeleteExercise{
+		Service:     &service.DeleteExercise{DB: db, Repo: &r},
+		GetExercise: ge,
+	}
+	ue := &handler.UpdateExercise{
+		Service:     &service.UpdateExercise{DB: db, Repo: &r},
+		Validator:   v,
+		GetExercise: ge,
+	}
 	mux.Route("/exercises", func(r chi.Router) {
 		r.Use(handler.AuthMiddleware(jwter))
 		r.Post("/", ae.ServeHTTP)
 		r.Get("/", le.ServeHTTP)
+
 		r.Route("/{exerciseID}", func(r chi.Router) {
 			r.Get("/", ge.ServeHTTP)
+			r.Delete("/", de.ServeHTTP)
+			r.Put("/", ue.ServeHTTP)
 		})
 	})
 

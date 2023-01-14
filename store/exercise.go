@@ -57,3 +57,40 @@ func (r *Repository) GetExercise(
 	}
 	return exercise, nil
 }
+
+// エクササイズを削除する
+func (r *Repository) DeleteExercise(
+	ctx context.Context, db Execer, id entity.ExerciseID,
+) (*int64, error) {
+	sql := `DELETE FROM exercises WHERE id = ?;`
+	result, err := db.ExecContext(ctx, sql, id)
+	if err != nil {
+		return nil, err
+	}
+	affected, err := result.RowsAffected()
+	if err != nil {
+		return nil, err
+	}
+	return &affected, nil
+}
+
+// エクササイズを更新する
+func (r *Repository) UpdateExercise(
+	ctx context.Context, db Execer, e *entity.Exercise,
+) (*int64, error) {
+	e.Modified = r.Clocker.Now()
+	sql := `UPDATE exercises SET
+			title = ?, description = ?, modified = ?
+			WHERE id = ?;`
+	result, err := db.ExecContext(
+		ctx, sql, e.Title, e.Description, e.Modified, e.ID,
+	)
+	if err != nil {
+		return nil, err
+	}
+	affected, err := result.RowsAffected()
+	if err != nil {
+		return nil, err
+	}
+	return &affected, nil
+}
